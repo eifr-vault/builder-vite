@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useStorybookApi, isStory } from '@storybook/api';
-import { AddonPanel } from '@storybook/components';
+import { AddonPanel, IconButton, Icons, Button } from '@storybook/components';
 import Editor from '@monaco-editor/react';
 
 interface PanelProps {
@@ -8,19 +8,9 @@ interface PanelProps {
 }
 
 export const Panel: React.FC<PanelProps> = (props) => {
-  //storybook.js.org/docs/react/addons/addons-api#useaddonstate
-  // const [results, setState] = useAddonState(ADDON_ID, {
-  //   danger: [],
-  //   warning: [],
-  // });
-
-  //storybook.js.org/docs/react/addons/addons-api#usechannel
-  // const emit = useChannel({
-  //   [EVENTS.RESULT]: (newResults) => setState(newResults),
-  // });
   const { getCurrentStoryData } = useStorybookApi();
   const storyData = getCurrentStoryData();
-  const [data, setData] = useState<{ content: string; path: string }>();
+  const [data, setData] = useState<{ content: string; path: string }>({ content: '', path: '' });
   const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
 
   useEffect(() => {
@@ -52,10 +42,23 @@ export const Panel: React.FC<PanelProps> = (props) => {
 
   return (
     <AddonPanel {...props}>
-      <button onClick={onSave} disabled={!unsavedChanges}>
-        save
-      </button>
-      <Editor defaultLanguage="javascript" value={data?.content ?? ''} onChange={onChange} />
+      <Button
+        small={false}
+        containsIcon={true}
+        onClick={onSave}
+        disabled={!unsavedChanges}
+        style={{
+          position: 'absolute',
+          bottom: '5%',
+          right: '5%',
+          zIndex: 1,
+          background: 'bisque',
+          boxShadow: '0 0 10px #00000066',
+        }}
+      >
+        <Icons icon="pullrequest" name="save" />
+      </Button>
+      <Editor defaultLanguage="javascript" value={data?.content} onChange={onChange} />
     </AddonPanel>
   );
 };
