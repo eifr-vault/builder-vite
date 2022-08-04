@@ -4,10 +4,10 @@ import { commonConfig } from './vite-config';
 import { Router } from 'express';
 import { Server } from 'http';
 import type { EnvsRaw, ExtendedOptions } from './types';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import path from 'path';
-import { transformWithEsbuild } from 'vite';
 import ts from 'typescript';
+import { json } from 'body-parser';
 
 export async function createEditingServer(options: ExtendedOptions, devServer: Server, router: Router) {
   const { port, presets } = options;
@@ -49,7 +49,20 @@ export async function createEditingServer(options: ExtendedOptions, devServer: S
     const component = path.resolve(path.dirname(filePath), as ?? req.params.fileName);
 
     const file = readFileSync(component);
-    res.status(200).send(file);
+    res.status(200).json({
+      path: component,
+      content: file.toString(),
+    });
+  });
+
+  const jsonParser = json();
+
+  router.post('/saveFile', jsonParser, async (req, res, next) => {
+    if (!req?.body?.path) {
+      return res.status(400).send('error');
+    }
+    writeFileSync(req.body.path, req.body.content);
+    res.status(200);
   });
 }
 

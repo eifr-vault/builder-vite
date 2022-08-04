@@ -36,7 +36,8 @@ export const Button = ({ primary, backgroundColor, size = 'medium', label, ...pr
       style={backgroundColor && { backgroundColor }}
       {...props}
     >
-      {label}
+      {label}t
+      
     </button>
   );
 };

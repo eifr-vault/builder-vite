@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useAddonState, useChannel, useStorybookApi, isStory } from '@storybook/api';
-import { AddonPanel, Source } from '@storybook/components';
-import { ADDON_ID, EVENTS } from './constants';
-import { PanelContent } from './PanelContent';
+import { useStorybookApi, isStory } from '@storybook/api';
+import { AddonPanel } from '@storybook/components';
+import Editor from '@monaco-editor/react';
 
 interface PanelProps {
   active: boolean;
@@ -20,23 +19,34 @@ export const Panel: React.FC<PanelProps> = (props) => {
   //   [EVENTS.RESULT]: (newResults) => setState(newResults),
   // });
   const { getCurrentStoryData } = useStorybookApi();
-  const storydata = getCurrentStoryData();
-  const [data, setData] = useState('testing');
-  console.log(storydata);
+  const storyData = getCurrentStoryData();
+  const [data, setData] = useState<{ content: string; path: string }>();
+  console.log(storyData);
   useEffect(() => {
-    if (props.active && isStory(storydata)) {
+    if (props.active && isStory(storyData)) {
       console.log('fetching...');
-      fetch(`/getFile/${storydata.parameters.fileName}`).then((res) => {
-        res.text().then((text) => {
-          setData(text);
+      fetch(`/getFile/${storyData.parameters.fileName}`).then((res) => {
+        res.json().then((json: { content: string; path: string }) => {
+          setData(json);
         });
       });
     }
-  }, [props.active, storydata]);
+  }, [props.active, storyData]);
+
+  const onChange: React.ComponentPropsWithoutRef<typeof Editor>['onChange'] = (value) => {
+    const body = { ...data, content: value };
+    const url = `/saveFile`;
+    fetch(url, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      mode: 'cors',
+      headers: new Headers({ 'content-type': 'application/json' }),
+      body: JSON.stringify(body),
+    });
+  };
 
   return (
     <AddonPanel {...props}>
-      <Source code={data} language="tsx" />
+      <Editor defaultLanguage="javascript" value={data?.content ?? ''} onChange={onChange} />
     </AddonPanel>
   );
 };

@@ -8,6 +8,6 @@ export const parameters = {
   },
 };
 
-export const argTypes = { globalArg: { options: ['A', 'B'], control: 'select' } };
+export const argTypes = { globalarg: { options: ['A', 'B'], control: 'select' } };
 
-export const args = { globalArg: 'A' };
+export const args = { globalarg: 'A' };
