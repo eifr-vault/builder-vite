@@ -21,7 +21,8 @@ export const Panel: React.FC<PanelProps> = (props) => {
   const { getCurrentStoryData } = useStorybookApi();
   const storyData = getCurrentStoryData();
   const [data, setData] = useState<{ content: string; path: string }>();
-  console.log(storyData);
+  const [unsavedChanges, setUnsavedChanges] = useState<boolean>(false);
+
   useEffect(() => {
     if (props.active && isStory(storyData)) {
       console.log('fetching...');
@@ -33,19 +34,27 @@ export const Panel: React.FC<PanelProps> = (props) => {
     }
   }, [props.active, storyData]);
 
-  const onChange: React.ComponentPropsWithoutRef<typeof Editor>['onChange'] = (value) => {
-    const body = { ...data, content: value };
+  const onSave = () => {
     const url = `/saveFile`;
     fetch(url, {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       mode: 'cors',
       headers: new Headers({ 'content-type': 'application/json' }),
-      body: JSON.stringify(body),
+      body: JSON.stringify(data),
     });
+    setUnsavedChanges(false);
+  };
+
+  const onChange: React.ComponentPropsWithoutRef<typeof Editor>['onChange'] = (value) => {
+    setData((data) => ({ ...data, content: value }));
+    setUnsavedChanges(true);
   };
 
   return (
     <AddonPanel {...props}>
+      <button onClick={onSave} disabled={!unsavedChanges}>
+        save
+      </button>
       <Editor defaultLanguage="javascript" value={data?.content ?? ''} onChange={onChange} />
     </AddonPanel>
   );

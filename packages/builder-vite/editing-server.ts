@@ -61,6 +61,7 @@ export async function createEditingServer(options: ExtendedOptions, devServer: S
     if (!req?.body?.path) {
       return res.status(400).send('error');
     }
+
     writeFileSync(req.body.path, req.body.content);
     res.status(200);
   });
