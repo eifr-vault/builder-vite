@@ -1,4 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
+// @ts-nocheck
 
 export function EnvironmentVariables({ dynamic = '' }) {
   return (

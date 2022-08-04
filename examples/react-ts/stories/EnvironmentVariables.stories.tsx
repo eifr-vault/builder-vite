@@ -11,5 +11,6 @@ const Template = (args) => <EnvironmentVariables {...args} />;
 
 export const Info = Template.bind({});
 Info.args = {
+  // @ts-ignore
   dynamic: import.meta.env.VITE_ENV_VAR,
 };

@@ -10,6 +10,7 @@ import type { Builder, StorybookConfig, Options } from '@storybook/core-common';
 import type { RequestHandler, Request, Response } from 'express';
 import type { InlineConfig, UserConfig, ViteDevServer } from 'vite';
 import type { ExtendedOptions } from './types';
+import { createEditingServer } from './editing-server';
 
 // Storybook's Stats are optional Webpack related property
 export type ViteStats = null;
@@ -46,6 +47,7 @@ function iframeMiddleware(options: ExtendedOptions, server: ViteDevServer): Requ
 
 export const start: ViteBuilder['start'] = async ({ startTime, options, router, server: devServer }) => {
   const server = await createViteServer(options as ExtendedOptions, devServer);
+  const editingServer = await createEditingServer(options as ExtendedOptions, devServer, router);
 
   // Just mock this endpoint (which is really Webpack-specific) so we don't get spammed with 404 in browser devtools
   // TODO: we should either show some sort of progress from Vite, or just try to disable the whole Loader in the Manager UI.

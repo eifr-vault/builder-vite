@@ -6,6 +6,10 @@
   "main": "index.js",
   "scripts": {
     "storybook": "start-storybook --port 6007",
+    "buildBabel:esm": "babel ./stories -d ./dist/esm --env-name esm --extensions \".js,.jsx,.ts,.tsx\"",
+    "buildTsc": "tsc --declaration --emitDeclarationOnly --outDir ./dist/ts",
+    "build:watch": "concurrently \"yarn buildBabel:esm --watch\" \"yarn buildTsc --watch\"",
+    "start": "concurrently \"yarn build:watch\" \"yarn storybook --no-manager-cache --quiet\"",
     "build-storybook": "build-storybook",
     "preview-storybook": "http-server storybook-static --port 6007 --silent",
     "test": "wait-on tcp:6007 && test-storybook --url 'http://localhost:6007'",
@@ -18,6 +22,11 @@
     "react-dom": "^16.4.14"
   },
   "devDependencies": {
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-react": "^7.12.5",
+    "@babel/preset-typescript": "^7.13.0",
     "@storybook/addon-a11y": "^6.5.9",
     "@storybook/addon-docs": "^6.5.9",
     "@storybook/addon-essentials": "^6.5.9",
@@ -25,6 +34,7 @@
     "@storybook/react": "^6.5.9",
     "@storybook/test-runner": "0.1.0",
     "@vitejs/plugin-react": "^2.0.0-beta.1",
+    "concurrently": "^6.2.0",
     "http-server": "^14.1.0",
     "jest": "^27.5.1",
     "npm-run-all": "^4.1.5",
@@ -32,6 +42,9 @@
     "typescript": "^4.5.4",
     "vite": "^3.0.0-beta.9",
     "wait-on": "^6.0.1"
+  },
+  "peerDependencies": {
+    "@storybook/addons": "^6.5.8"
   },
   "bookcase-builder": {}
 }
